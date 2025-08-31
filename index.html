@@ -1,175 +1,158 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
-</head>
-<body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="zh-Hant"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;遊戲起始頁&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: Arial, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #fff;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #1a1a1a;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>#background-canvas {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: -1;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100vh;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative; /* 確保內容在 canvas 之上 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.content {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0, 0, 0, 0.6);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 600px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>p {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.6;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.buttons {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 2rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.button {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: inline-block;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 1rem 2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 1rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-decoration: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #fff;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: background-color 0.3s ease;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.button-purple {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #8A2BE2;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.button-purple:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #6A1AB8;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.button-orange {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #FFA500;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.button-orange:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #CC8400;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 背景 Canvas 元素 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;canvas id="background-canvas"&gt;&lt;/canvas&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 頁面主要內容 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="content"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;冒險者育恩，恭喜你獲得了參與遊戲的機會，成功完成所有任務，你將獲得意想不到的獎勵，你願意接受這個挑戰嗎？&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="buttons"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="YOUR_URL_HERE" class="button button-purple"&gt;願意&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="YOUR_URL_HERE" class="button button-orange"&gt;來吧&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const canvas = document.getElementById('background-canvas');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const ctx = canvas.getContext('2d');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let particles = [];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 設置畫布大小並在視窗大小改變時更新</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function resizeCanvas() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>canvas.width = window.innerWidth;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>canvas.height = window.innerHeight;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>particles = [];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 50; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>particles.push(new Particle());</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>window.addEventListener('resize', resizeCanvas);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>resizeCanvas();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 定義粒子物件</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function Particle() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>this.x = Math.random() * canvas.width;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>this.y = Math.random() * canvas.height;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>this.size = Math.random() * 3 + 1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>this.speedX = Math.random() * 0.5 - 0.25;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>this.speedY = Math.random() * 0.5 - 0.25;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 繪製粒子</p>
-<p class="p1"><span class="Apple-converted-space">        </span>Particle.prototype.draw = function() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>ctx.beginPath();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>ctx.fill();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 更新粒子位置</p>
-<p class="p1"><span class="Apple-converted-space">        </span>Particle.prototype.update = function() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>this.x += this.speedX;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>this.y += this.speedY;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// 如果粒子超出邊界，重新生成</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (this.x &gt; canvas.width || this.x &lt; 0) this.speedX = -this.speedX;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (this.y &gt; canvas.height || this.y &lt; 0) this.speedY = -this.speedY;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 動畫循環</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function animate() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>ctx.clearRect(0, 0, canvas.width, canvas.height);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; particles.length; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>particles[i].update();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>particles[i].draw();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>requestAnimationFrame(animate);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>window.onload = function() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animate();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
-</body>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>遊戲起始頁</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        color: #fff;
+        background-color: #1a1a1a;
+      }
+
+      #background-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 2rem;
+        position: relative; /* 確保內容在 canvas 之上 */
+      }
+
+      .content {
+        padding: 2rem;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        max-width: 600px;
+        text-align: center;
+      }
+
+      p {
+        font-size: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .buttons {
+        margin-top: 2rem;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 1rem 2rem;
+        margin: 0 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .button-purple {
+        background-color: #8a2be2;
+      }
+
+      .button-purple:hover {
+        background-color: #6a1ab8;
+      }
+
+      .button-orange {
+        background-color: #ffa500;
+      }
+
+      .button-orange:hover {
+        background-color: #cc8400;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 背景 Canvas 元素 -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- 頁面主要內容 -->
+    <div class="container">
+      <div class="content">
+        <p>
+          冒險者育恩，恭喜你獲得了參與遊戲的機會，成功完成所有任務，你將獲得意想不到的獎勵，你願意接受這個挑戰嗎？
+        </p>
+        <div class="buttons">
+          <a href="YOUR_URL_HERE" class="button button-purple">願意</a>
+          <a href="YOUR_URL_HERE" class="button button-orange">來吧</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("background-canvas");
+      const ctx = canvas.getContext("2d");
+      let particles = [];
+
+      // 設置畫布大小並在視窗大小改變時更新
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        particles = [];
+        for (let i = 0; i < 50; i++) {
+          particles.push(new Particle());
+        }
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      // 定義粒子物件
+      function Particle() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+      }
+
+      // 繪製粒子
+      Particle.prototype.draw = function () {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      };
+
+      // 更新粒子位置
+      Particle.prototype.update = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // 如果粒子超出邊界，重新生成
+        if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+        if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+      };
+
+      // 動畫循環
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+        }
+        requestAnimationFrame(animate);
+      }
+
+      window.onload = function () {
+        animate();
+      };
+    </script>
+  </body>
 </html>
