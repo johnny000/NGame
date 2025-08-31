@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>第一關 把貓咪整理好</title>
+    <title>把貓咪整理好</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
@@ -213,7 +213,7 @@
   </head>
   <body class="bg-[#1a1a1a] flex items-center justify-center min-h-screen">
     <div class="game-container">
-      <h1 class="text-3xl font-bold mb-4 text-gray-200">第一關 把貓咪整理好</h1>
+      <h1 class="text-3xl font-bold mb-4 text-gray-200">把貓咪整理好</h1>
 
       <div class="target-board-wrapper">
         <h3 class="text-lg mb-4 text-gray-400">
@@ -249,7 +249,7 @@
         點擊第一枚硬幣開始。
       </div>
 
-      <div class="flex justify-center gap-4 mt-8">
+      <div id="bottom-buttons" class="flex justify-center gap-4 mt-8">
         <button id="reset-btn" class="btn btn-primary">重新開始</button>
         <button
           id="undo-btn"
@@ -310,6 +310,7 @@
       const modalResetBtn = document.getElementById("modal-reset-btn");
       const gameWinModal = document.getElementById("game-win-modal");
       const modalWinBtn = document.getElementById("modal-win-btn");
+      const bottomButtons = document.getElementById("bottom-buttons");
 
       // 使用你提供的圖片網址，並改為原始大小的圖片
       const frontImageURL = "image/cat1.png";
@@ -590,10 +591,12 @@ ${coins[6] ? (coins[6] === "front" ? "正" : "反") : "空"} ${
             if (checkWin()) {
               moveControls.classList.add("hidden");
               gameWinModal.classList.remove("hidden");
+              bottomButtons.classList.add("hidden"); // 隱藏底部按鈕
               console.log("遊戲獲勝，顯示成功視窗。");
             } else if (moveCount >= 4) {
               moveControls.classList.add("hidden");
               gameOverModal.classList.remove("hidden");
+              bottomButtons.classList.add("hidden"); // 隱藏底部按鈕
               console.log("步數用完且尚未獲勝，顯示遊戲失敗視窗。");
             } else {
               showMessage(`移動成功！剩餘 ${4 - moveCount} 步。`);
@@ -636,6 +639,8 @@ ${coins[6] ? (coins[6] === "front" ? "正" : "反") : "空"} ${
         console.log("遊戲成功視窗目前的類別:", gameWinModal.classList);
         gameWinModal.classList.add("hidden");
         console.log("執行隱藏後，遊戲成功視窗的類別:", gameWinModal.classList);
+
+        bottomButtons.classList.remove("hidden"); // 顯示底部按鈕
       }
 
       // 上一步
@@ -647,7 +652,7 @@ ${coins[6] ? (coins[6] === "front" ? "正" : "反") : "空"} ${
       // 處理成功視窗按鈕點擊
       function handleWinBtnClick() {
         // 這個函式會根據你提供的網址進行連結
-        window.location.href = "https://www.google.com/";
+        window.location.href = "final.html";
       }
 
       // 初始化遊戲
