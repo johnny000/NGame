@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>第一關 把貓咪整理好</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #1a1a1a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .game-container {
+        background-color: #2d2b45;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        padding: 2rem;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .puzzle-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+      .board-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin: 0 auto;
+        width: fit-content;
+        aspect-ratio: 1 / 1;
+      }
+      .cell {
+        width: 100px;
+        height: 100px;
+        border: 2px solid #3b3855;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        user-select: none;
+        cursor: default;
+        overflow: hidden; /* 確保圖片不超出邊界 */
+      }
+      .coin-wrapper {
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        border: 4px solid transparent; /* 調整邊框寬度以容納選取框 */
+        border-radius: 8px;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .coin-image {
+        width: 90%; /* 調整圖片尺寸 */
+        height: 90%; /* 調整圖片尺寸 */
+        object-fit: contain; /* 確保圖片在容器內完整顯示 */
+        border-radius: 8px; /* 圖片變回方形 */
+        transition: transform 0.3s ease;
+      }
+      .coin-wrapper.selected {
+        border-color: #8b5cf6; /* 將選取效果從陰影改為邊框 */
+      }
+      #message-box {
+        min-height: 3rem;
+        margin-top: 1rem;
+        font-size: 1.125rem;
+        color: #d1d5db;
+      }
+      .win-message {
+        color: #10b981;
+        font-weight: bold;
+      }
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-top: 1rem;
+      }
+      .btn-primary {
+        background-color: #8b5cf6;
+        color: #ffffff;
+      }
+      .btn-primary:hover {
+        background-color: #7c3aed;
+      }
+      .direction-btn {
+        width: 50px;
+        height: 50px;
+        background-color: #4b4961;
+        color: #d1d5db;
+        font-size: 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+      }
+      .direction-btn:hover {
+        background-color: #5d5b76;
+      }
+      .direction-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .target-board {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0.5rem;
+        width: 110px;
+        height: 110px;
+        margin: 0 auto;
+      }
+      .target-board .cell {
+        width: 50px;
+        height: 50px;
+        border: 1px solid #3b3855;
+      }
+      .target-board .coin-wrapper {
+        cursor: default;
+      }
+      .target-board .coin-image {
+        width: 50px;
+        height: 50px;
+      }
+      .target-board-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #move-counter {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #e5e7eb;
+      }
+
+      /* 彈出視窗樣式 */
+      .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .modal-content {
+        background-color: #2d2b45;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      .modal-message {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #dc2626; /* 紅色 */
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-win-message {
+        color: #10b981; /* 綠色 */
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* 修正隱藏類別的樣式，使用 !important 來確保覆蓋性 */
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body class="bg-[#1a1a1a] flex items-center justify-center min-h-screen">
+    <div class="game-container">
+      <h1 class="text-3xl font-bold mb-4 text-gray-200">第一關 把貓咪整理好</h1>
+
+      <div class="target-board-wrapper">
+        <h3 class="text-lg mb-4 text-gray-400">
+          一次選取兩隻相鄰的貓咪，上下左右移動來完成目標排列吧
+        </h3>
+      </div>
+
+      <div class="target-board-wrapper">
+        <h2 class="text-xl font-bold mb-2 text-gray-200">目標排列</h2>
+        <div class="target-board" id="target-board">
+          <!-- 目標硬幣會由 JavaScript 渲染到這裡 -->
+        </div>
+      </div>
+
+      <div class="board-container">
+        <div class="puzzle-section">
+          <h2 class="text-xl font-bold mb-4 text-gray-200">　</h2>
+          <div id="move-counter" class="mb-4">步數: <span>0</span> / 4</div>
+          <div class="grid-container" id="game-board">
+            <!-- 硬幣會由 JavaScript 渲染到這裡 -->
+          </div>
+        </div>
+      </div>
+
+      <div id="move-controls" class="flex justify-center gap-2 mt-8 hidden">
+        <button id="move-up" class="direction-btn">↑</button>
+        <button id="move-down" class="direction-btn">↓</button>
+        <button id="move-left" class="direction-btn">←</button>
+        <button id="move-right" class="direction-btn">→</button>
+      </div>
+
+      <div id="message-box" class="text-lg text-gray-400">
+        點擊第一枚硬幣開始。
+      </div>
+
+      <div class="flex justify-center gap-4 mt-8">
+        <button id="reset-btn" class="btn btn-primary">重新開始</button>
+        <button
+          id="undo-btn"
+          class="btn bg-gray-600 text-gray-200 hover:bg-gray-700"
+        >
+          上一步
+        </button>
+      </div>
+    </div>
+
+    <!-- 遊戲失敗彈出視窗 -->
+    <div id="game-over-modal" class="modal hidden">
+      <div class="modal-content">
+        <p class="modal-message">挑戰失敗！要不要找很會玩遊戲的馬麻求救呢？</p>
+        <button id="modal-reset-btn" class="btn btn-primary">重新開始</button>
+      </div>
+    </div>
+
+    <!-- 遊戲成功彈出視窗 -->
+    <div id="game-win-modal" class="modal hidden">
+      <div class="modal-content">
+        <p class="modal-message modal-win-message">
+          太聰明了！貝貝和咪咪咳了兩聲，吐出了一組密碼"1111"
+        </p>
+        <button id="modal-win-btn" class="btn btn-primary">
+          點我解鎖下一關
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // 遊戲狀態
+      let coins = [
+        "front",
+        "front",
+        null,
+        "back",
+        "back",
+        null,
+        null,
+        null,
+        null,
+      ];
+      let selectedIndices = [];
+      let isMoving = false;
+      let moveCount = 0;
+
+      const board = document.getElementById("game-board");
+      const targetBoard = document.getElementById("target-board");
+      const messageBox = document.getElementById("message-box");
+      const resetButton = document.getElementById("reset-btn");
+      const undoButton = document.getElementById("undo-btn");
+      const moveControls = document.getElementById("move-controls");
+      const moveCounter = document
+        .getElementById("move-counter")
+        .querySelector("span");
+      const gameOverModal = document.getElementById("game-over-modal");
+      const modalResetBtn = document.getElementById("modal-reset-btn");
+      const gameWinModal = document.getElementById("game-win-modal");
+      const modalWinBtn = document.getElementById("modal-win-btn");
+
+      // 使用你提供的圖片網址，並改為原始大小的圖片
+      const frontImageURL = "https://images2.imgbox.com/2e/19/smMCf8qT_o.png";
+      const backImageURL = "https://images2.imgbox.com/23/60/JNkTjikB_o.png";
+
+      // 勝利條件
+      const targetPattern = ["front", "back", "back", "front"];
+
+      // 渲染遊戲板
+      function renderBoard() {
+        board.innerHTML = "";
+        coins.forEach((face, index) => {
+          const cell = document.createElement("div");
+          cell.className = `cell`;
+          cell.dataset.index = index;
+
+          if (face) {
+            const coinWrapper = document.createElement("div");
+            coinWrapper.className = `coin-wrapper`;
+            coinWrapper.dataset.index = index;
+
+            const coinImage = document.createElement("img");
+            coinImage.className = "coin-image";
+            // 使用貓咪圖片網址
+            coinImage.src = face === "front" ? frontImageURL : backImageURL;
+            coinImage.alt =
+              face === "front" ? "正面硬幣 (貓咪1)" : "反面硬幣 (貓咪2)";
+
+            coinWrapper.appendChild(coinImage);
+            cell.appendChild(coinWrapper);
+          }
+          board.appendChild(cell);
+        });
+        updateUI();
+      }
+
+      // 渲染目標板
+      function renderTargetBoard() {
+        targetBoard.innerHTML = "";
+        targetPattern.forEach((face) => {
+          const cell = document.createElement("div");
+          cell.className = `cell`;
+
+          if (face) {
+            const coinWrapper = document.createElement("div");
+            coinWrapper.className = `coin-wrapper`;
+
+            const coinImage = document.createElement("img");
+            coinImage.className = "coin-image";
+            // 使用貓咪圖片網址
+            coinImage.src = face === "front" ? frontImageURL : backImageURL;
+            coinImage.alt =
+              face === "front"
+                ? "目標-正面硬幣 (貓咪1)"
+                : "目標-反面硬幣 (貓咪2)";
+
+            coinWrapper.appendChild(coinImage);
+            cell.appendChild(coinImage);
+          }
+          targetBoard.appendChild(cell);
+        });
+      }
+
+      // 檢查是否勝利
+      function checkWin() {
+        // 為了幫助偵錯，將完整的棋盤狀態印出
+        console.log("--- 遊戲狀態 ---");
+        console.log(`棋盤：
+${coins[0] ? (coins[0] === "front" ? "正" : "反") : "空"} ${
+          coins[1] ? (coins[1] === "front" ? "正" : "反") : "空"
+        } ${coins[2] ? (coins[2] === "front" ? "正" : "反") : "空"}
+${coins[3] ? (coins[3] === "front" ? "正" : "反") : "空"} ${
+          coins[4] ? (coins[4] === "front" ? "正" : "反") : "空"
+        } ${coins[5] ? (coins[5] === "front" ? "正" : "反") : "空"}
+${coins[6] ? (coins[6] === "front" ? "正" : "反") : "空"} ${
+          coins[7] ? (coins[7] === "front" ? "正" : "反") : "空"
+        } ${coins[8] ? (coins[8] === "front" ? "正" : "反") : "空"}
+`);
+
+        const subgrids = [
+          [0, 1, 3, 4], // Top-left 2x2
+          [1, 2, 4, 5], // Top-right 2x2
+          [3, 4, 6, 7], // Bottom-left 2x2
+          [4, 5, 7, 8], // Bottom-right 2x2
+        ];
+
+        // 檢查所有可能的 2x2 區域
+        for (const indices of subgrids) {
+          const subgridPattern = [
+            coins[indices[0]],
+            coins[indices[1]],
+            coins[indices[2]],
+            coins[indices[3]],
+          ];
+          console.log(`檢查子網格 ${indices}，排列為：`, subgridPattern);
+
+          if (
+            JSON.stringify(subgridPattern) === JSON.stringify(targetPattern)
+          ) {
+            messageBox.textContent = `恭喜你！你完成了！總共移動了 ${moveCount} 步。`;
+            messageBox.classList.add("win-message");
+            console.log("遊戲獲勝！");
+            return true;
+          }
+        }
+
+        console.log("目標排列：", targetPattern);
+        console.log("----------------");
+
+        messageBox.classList.remove("win-message");
+        return false;
+      }
+
+      // 顯示訊息
+      function showMessage(text) {
+        messageBox.textContent = text;
+      }
+
+      // 更新UI狀態（選取、方向鍵）
+      function updateUI() {
+        // 更新計步器
+        moveCounter.textContent = moveCount;
+        // 清除所有選取狀態
+        document
+          .querySelectorAll(".coin-wrapper")
+          .forEach((el) => el.classList.remove("selected"));
+        // 標記選取的硬幣
+        selectedIndices.forEach((index) => {
+          const el = document.querySelector(
+            `.coin-wrapper[data-index='${index}']`
+          );
+          if (el) el.classList.add("selected");
+        });
+        // 顯示或隱藏方向鍵
+        if (selectedIndices.length === 2) {
+          moveControls.classList.remove("hidden");
+        } else {
+          moveControls.classList.add("hidden");
+        }
+      }
+
+      // 檢查硬幣是否相鄰
+      function areAdjacent(idx1, idx2) {
+        const [row1, col1] = [Math.floor(idx1 / 3), idx1 % 3];
+        const [row2, col2] = [Math.floor(idx2 / 3), idx2 % 3];
+        const rowDiff = Math.abs(row1 - row2);
+        const colDiff = Math.abs(col1 - col2);
+        return (
+          (rowDiff === 0 && colDiff === 1) || (rowDiff === 1 && colDiff === 0)
+        );
+      }
+
+      // 處理硬幣點擊事件
+      function handleCoinClick(event) {
+        if (isMoving || checkWin() || moveCount >= 4) return;
+        const clickedWrapper = event.target.closest(".coin-wrapper");
+        if (!clickedWrapper) return;
+        const clickedIndex = parseInt(clickedWrapper.dataset.index);
+
+        if (selectedIndices.includes(clickedIndex)) {
+          // 取消選取
+          selectedIndices = selectedIndices.filter(
+            (idx) => idx !== clickedIndex
+          );
+        } else {
+          if (selectedIndices.length < 2) {
+            selectedIndices.push(clickedIndex);
+          }
+          if (selectedIndices.length === 2) {
+            // 如果選取了兩枚硬幣，檢查是否相鄰
+            if (!areAdjacent(selectedIndices[0], selectedIndices[1])) {
+              showMessage("錯誤！這兩枚硬幣沒有互相接觸。請重新選擇。");
+              selectedIndices = [];
+            } else {
+              showMessage("請選擇移動方向。");
+            }
+          }
+        }
+        updateUI();
+      }
+
+      // 處理方向鍵點擊事件
+      function handleMoveClick(event) {
+        const direction = event.target.id.replace("move-", "");
+        if (selectedIndices.length !== 2 || isMoving || moveCount >= 4) {
+          return;
+        }
+
+        const [idx1, idx2] = selectedIndices;
+
+        let newIdx1, newIdx2;
+        const dirMap = {
+          up: -3,
+          down: 3,
+          left: -1,
+          right: 1,
+        };
+        const dirValue = dirMap[direction];
+
+        newIdx1 = idx1 + dirValue;
+        newIdx2 = idx2 + dirValue;
+
+        // 檢查是否超出邊界
+        const isWithinBounds =
+          newIdx1 >= 0 && newIdx1 < 9 && newIdx2 >= 0 && newIdx2 < 9;
+        if (!isWithinBounds) {
+          showMessage("無法移動到該方向，超出邊界。");
+          console.log("移動失敗：超出邊界。");
+          selectedIndices = [];
+          updateUI();
+          return;
+        }
+
+        // 處理跨行移動的特殊情況
+        const isHorizontalMove = direction === "left" || direction === "right";
+        const row1 = Math.floor(idx1 / 3);
+        const row2 = Math.floor(idx2 / 3);
+        const newRow1 = Math.floor(newIdx1 / 3);
+        const newRow2 = Math.floor(newIdx2 / 3);
+
+        // 如果是水平移動，檢查是否會跨行
+        if (isHorizontalMove && (row1 !== newRow1 || row2 !== newRow2)) {
+          showMessage("無法跨行移動！");
+          console.log("移動失敗：無法跨行移動。");
+          selectedIndices = [];
+          updateUI();
+          return;
+        }
+
+        // 檢查目標位置是否為空，並忽略被選中的硬幣
+        const isTargetEmpty =
+          (coins[newIdx1] === null || selectedIndices.includes(newIdx1)) &&
+          (coins[newIdx2] === null || selectedIndices.includes(newIdx2));
+
+        if (isWithinBounds && isTargetEmpty) {
+          isMoving = true;
+
+          // 執行移動
+          const tempCoins = [...coins];
+          const coin1Value = tempCoins[idx1];
+          const coin2Value = tempCoins[idx2];
+
+          tempCoins[idx1] = null;
+          tempCoins[idx2] = null;
+          tempCoins[newIdx1] = coin1Value;
+          tempCoins[newIdx2] = coin2Value;
+
+          coins = tempCoins;
+
+          // 增加步數
+          moveCount++;
+
+          // 執行動畫
+          const wrapper1 = document.querySelector(
+            `.coin-wrapper[data-index='${idx1}']`
+          );
+          const wrapper2 = document.querySelector(
+            `.coin-wrapper[data-index='${idx2}']`
+          );
+
+          // 計算動畫位移
+          let [tX, tY] = [0, 0];
+          const pixelMove = 115;
+          if (direction === "up") tY = -pixelMove;
+          if (direction === "down") tY = pixelMove;
+          if (direction === "left") tX = -pixelMove;
+          if (direction === "right") tX = pixelMove;
+
+          wrapper1.style.transform = `translate(${tX}px, ${tY}px)`;
+          wrapper2.style.transform = `translate(${tX}px, ${tY}px)`;
+
+          setTimeout(() => {
+            isMoving = false;
+            selectedIndices = [];
+            renderBoard();
+            console.log(`移動成功！當前步數：${moveCount}`);
+            // 修正失敗條件：只有在步數用完且尚未獲勝時才顯示失敗訊息
+            if (checkWin()) {
+              moveControls.classList.add("hidden");
+              gameWinModal.classList.remove("hidden");
+              console.log("遊戲獲勝，顯示成功視窗。");
+            } else if (moveCount >= 4) {
+              moveControls.classList.add("hidden");
+              gameOverModal.classList.remove("hidden");
+              console.log("步數用完且尚未獲勝，顯示遊戲失敗視窗。");
+            } else {
+              showMessage(`移動成功！剩餘 ${4 - moveCount} 步。`);
+            }
+          }, 300);
+        } else {
+          showMessage("無法移動到該方向，目標位置已被佔據或超出邊界。");
+          console.log("移動失敗：目標位置已被佔據。");
+          selectedIndices = [];
+          updateUI();
+        }
+      }
+
+      // 重設遊戲
+      function resetGame() {
+        console.log("執行 resetGame()...");
+        coins = [
+          "front",
+          "front",
+          null,
+          "back",
+          "back",
+          null,
+          null,
+          null,
+          null,
+        ];
+        selectedIndices = [];
+        moveCount = 0; // 步數歸零
+        renderBoard();
+        showMessage("遊戲已重置。");
+        moveControls.classList.add("hidden");
+
+        // 檢查失敗視窗的狀態並強制隱藏
+        console.log("遊戲失敗視窗目前的類別:", gameOverModal.classList);
+        gameOverModal.classList.add("hidden");
+        console.log("執行隱藏後，遊戲失敗視窗的類別:", gameOverModal.classList);
+
+        // 隱藏成功視窗
+        console.log("遊戲成功視窗目前的類別:", gameWinModal.classList);
+        gameWinModal.classList.add("hidden");
+        console.log("執行隱藏後，遊戲成功視窗的類別:", gameWinModal.classList);
+      }
+
+      // 上一步
+      function undoLastMove() {
+        // 功能停用
+        showMessage("上一步功能已停用，挑戰4步完成！");
+      }
+
+      // 處理成功視窗按鈕點擊
+      function handleWinBtnClick() {
+        // 這個函式會根據你提供的網址進行連結
+        window.location.href = "https://www.google.com/";
+      }
+
+      // 初始化遊戲
+      function init() {
+        console.log("初始化遊戲中...");
+        // 強制在遊戲開始時重置所有狀態，確保失敗畫面隱藏
+        resetGame();
+        renderTargetBoard();
+        board.addEventListener("click", handleCoinClick);
+        resetButton.addEventListener("click", resetGame);
+        modalResetBtn.addEventListener("click", resetGame);
+        undoButton.addEventListener("click", undoLastMove);
+        moveControls.addEventListener("click", handleMoveClick);
+        modalWinBtn.addEventListener("click", handleWinBtnClick);
+      }
+
+      // 監聽 DOMContentLoaded 事件來確保腳本在頁面加載後執行
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
