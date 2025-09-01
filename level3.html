@@ -186,12 +186,13 @@
     <!-- Modal for feedback -->
     <div id="modal-overlay" class="modal-overlay hidden">
         <div class="modal text-white p-8 rounded-lg">
+            <!-- 要修改完成圖片的連結，請更改下方 img 標籤中的 src 屬性 -->
+            <img id="modal-puzzle-image" src="image/Virgo_Ori.png" class="hidden w-full max-w-xs mx-auto mb-4 rounded-lg">
             <p id="modal-message" class="text-2xl mb-6"></p>
             <button id="modal-button-continue" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition-colors">繼續</button>
             <a id="modal-link-button" href="#" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition-colors inline-block no-underline">前往輸入密碼</a>
         </div>
     </div>
-
     <script>
         // Data for cards and puzzles
         const cardUrls = [
