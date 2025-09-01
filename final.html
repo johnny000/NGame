@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>脈輪解鎖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .unlocked-section {
+            transition: all 0.5s ease-in-out;
+        }
+        .dialog-overlay {
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease-in-out;
+        }
+        .dialog-box {
+            animation: pop-in 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .dialog-error {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes pop-in {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main Content -->
+    <div id="main-content" class="relative max-w-lg w-full flex flex-col items-center">
+        <!-- 解鎖後顯示的文字 -->
+        <div id="unlocked-text-container" class="mb-4">
+            <p id="unlocked-text" class="text-white text-xl sm:text-2xl font-bold text-center hidden"></p>
+        </div>
+
+        <!-- Image Container -->
+        <div class="relative w-[500px] h-[500px] rounded-lg overflow-hidden shadow-lg">
+            <!-- 最終解鎖圖片 -->
+            <div id="final-image" class="absolute inset-0 hidden">
+                <img src="https://images2.imgbox.com/c6/e5/7hMXlTHp_o.png" alt="Final unlocked image" class="w-full h-full object-cover">
+            </div>
+
+            <!-- 被切割的三個圖片區塊 -->
+            <div id="image-sections" class="w-full h-full flex flex-col-reverse relative">
+                <!-- 下方圖片區塊 (500x257) -->
+                <div id="section-bottom" class="unlocked-section relative flex items-center justify-center" style="height: 257px;">
+                    <img id="bottom-unlocked" src="https://images2.imgbox.com/30/27/Jltx2FwZ_o.png" class="absolute inset-0 w-full h-full object-cover hidden" alt="Bottom unlocked image">
+                    <img id="bottom-locked" src="https://images2.imgbox.com/20/cf/Sh04ayZU_o.png" class="absolute inset-0 w-full h-full object-cover" alt="Bottom locked image">
+                </div>
+                <!-- 中間圖片區塊 (500x58) -->
+                <div id="section-middle" class="unlocked-section relative flex items-center justify-center" style="height: 58px;">
+                    <img id="middle-unlocked" src="https://images2.imgbox.com/d5/9b/6Sild86L_o.png" class="absolute inset-0 w-full h-full object-cover hidden" alt="Middle unlocked image">
+                    <img id="middle-locked" src="https://images2.imgbox.com/13/18/vTs09L98_o.png" class="absolute inset-0 w-full h-full object-cover" alt="Middle locked image">
+                </div>
+                <!-- 上方圖片區塊 (500x185) -->
+                <div id="section-top" class="unlocked-section relative flex items-center justify-center" style="height: 185px;">
+                    <img id="top-unlocked" src="https://images2.imgbox.com/34/e6/znzjRAZR_o.png" class="absolute inset-0 w-full h-full object-cover hidden" alt="Top unlocked image">
+                    <img id="top-locked" src="https://images2.imgbox.com/be/d0/zy7QPjb8_o.png" class="absolute inset-0 w-full h-full object-cover" alt="Top locked image">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 下一關按鈕容器 -->
+        <div id="next-level-button-container" class="mt-4 hidden">
+            <a id="next-level-link" href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-lg">前往下一關</a>
+        </div>
+    </div>
+
+    <!-- Dialog Box Overlay -->
+    <div id="dialog-overlay" class="dialog-overlay fixed inset-0 z-50 flex items-center justify-center transition-opacity opacity-100">
+        <!-- Dialog Box -->
+        <div id="dialog-box" class="dialog-box bg-gray-800 rounded-lg p-6 m-4 max-w-sm w-full shadow-xl transform scale-100">
+            <!-- Initial State -->
+            <div id="initial-dialog" class="flex flex-col items-center justify-center text-center">
+                <p class="text-lg font-bold mb-4">請輸入密碼</p>
+                <input type="password" id="password-input" class="w-full p-2 mb-4 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button id="confirm-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">確認</button>
+            </div>
+            <!-- Error State -->
+            <div id="error-dialog" class="hidden flex-col items-center justify-center text-center">
+                <p class="text-lg font-bold text-red-400 mb-4">密碼錯誤，請重新嘗試</p>
+                <button id="retry-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">重新輸入</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM 元素
+        const dialogOverlay = document.getElementById('dialog-overlay');
+        const dialogBox = document.getElementById('dialog-box');
+        const initialDialog = document.getElementById('initial-dialog');
+        const errorDialog = document.getElementById('error-dialog');
+        const passwordInput = document.getElementById('password-input');
+        const confirmButton = document.getElementById('confirm-button');
+        const retryButton = document.getElementById('retry-button');
+        const imageSections = document.getElementById('image-sections');
+        const finalImage = document.getElementById('final-image');
+        const unlockedText = document.getElementById('unlocked-text');
+        const nextLevelButtonContainer = document.getElementById('next-level-button-container');
+        const nextLevelLink = document.getElementById('next-level-link');
+        
+        // 圖片元素
+        const bottomUnlocked = document.getElementById('bottom-unlocked');
+        const bottomLocked = document.getElementById('bottom-locked');
+        const middleUnlocked = document.getElementById('middle-unlocked');
+        const middleLocked = document.getElementById('middle-locked');
+        const topUnlocked = document.getElementById('top-unlocked');
+        const topLocked = document.getElementById('top-locked');
+        
+        // 密碼設定
+        const passwords = {
+            '0396': 1,
+            '0639': 2,
+            '0963': 3,
+        };
+
+        // 預留的連結網址
+        const nextLevelLinks = {
+            '0396': 'level2.html', // 請在這裡填入第一關解鎖後的網址
+            '0963': 'level3.html', // 請在這裡填入第二關解鎖後的網址
+        };
+
+        // 處理確認按鈕點擊事件
+        confirmButton.addEventListener('click', () => {
+            const password = passwordInput.value;
+            const level = passwords[password];
+
+            if (level) {
+                // 正確密碼
+                dialogOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    dialogOverlay.classList.add('hidden');
+                }, 300);
+                
+                // 根據密碼級別解鎖圖片
+                unlockImages(password);
+            } else {
+                // 密碼錯誤
+                showErrorState();
+            }
+        });
+
+        // 處理重新輸入按鈕點擊事件
+        retryButton.addEventListener('click', () => {
+            showInitialState();
+        });
+
+        // 顯示錯誤狀態
+        function showErrorState() {
+            initialDialog.classList.add('hidden');
+            errorDialog.classList.remove('hidden');
+            dialogBox.classList.remove('dialog-box');
+            dialogBox.classList.add('dialog-error');
+            passwordInput.value = '';
+            
+            // 移除動畫類別，以便下次再次觸發
+            setTimeout(() => {
+                dialogBox.classList.remove('dialog-error');
+            }, 500);
+        }
+
+        // 顯示初始狀態
+        function showInitialState() {
+            errorDialog.classList.add('hidden');
+            initialDialog.classList.remove('hidden');
+        }
+
+        // 解鎖圖片
+        function unlockImages(password) {
+            unlockedText.classList.add('hidden'); // 清除文字
+            nextLevelButtonContainer.classList.add('hidden'); // 清除按鈕
+            
+            const level = passwords[password];
+
+            if (level >= 1) {
+                bottomLocked.classList.add('hidden');
+                bottomUnlocked.classList.remove('hidden');
+                unlockedText.textContent = '下三輪已打通！';
+                unlockedText.classList.remove('hidden');
+                
+                if (level < 3) {
+                    nextLevelLink.href = nextLevelLinks[password];
+                    nextLevelButtonContainer.classList.remove('hidden');
+                }
+            }
+            if (level >= 2) {
+                middleLocked.classList.add('hidden');
+                middleUnlocked.classList.remove('hidden');
+                unlockedText.textContent = '心輪已打通！';
+                unlockedText.classList.remove('hidden');
+
+                if (level < 3) {
+                    nextLevelLink.href = nextLevelLinks[password];
+                    nextLevelButtonContainer.classList.remove('hidden');
+                }
+            }
+            if (level >= 3) {
+                topLocked.classList.add('hidden');
+                topUnlocked.classList.remove('hidden');
+                // 最終解鎖，替換為一張大圖
+                imageSections.classList.add('hidden');
+                finalImage.classList.remove('hidden');
+                unlockedText.textContent = '你打通了所有脈輪，最終密碼已顯現';
+                unlockedText.classList.remove('hidden');
+            }
+        }
+
+    </script>
+
+</body>
+</html>
