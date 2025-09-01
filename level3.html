@@ -160,7 +160,7 @@
             <!-- Cards will be dynamically inserted here -->
         </div>
 
-        <!-- Puzzle Section -->
+       <!-- Puzzle Section -->
         <div class="puzzle-grid bg-cover bg-center rounded-lg shadow-inner" style="background-image: url('image/Virgo_BG.png');">
             <div id="puzzle-1" class="puzzle-piece">
                 <img src="image/Virgo_01.png" alt="Puzzle Piece 1">
@@ -193,9 +193,10 @@
             <a id="modal-link-button" href="#" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition-colors inline-block no-underline">前往輸入密碼</a>
         </div>
     </div>
+
     <script>
         // Data for cards and puzzles
-        const cardUrls = [
+       const cardUrls = [
             'image/card_01.png', // 1 - Correct
             'image/card_02.png', // 2 - Correct
             'image/card_03.png', // 3 - Correct
@@ -227,6 +228,7 @@
         const modalMessage = document.getElementById('modal-message');
         const modalButtonContinue = document.getElementById('modal-button-continue');
         const modalLinkButton = document.getElementById('modal-link-button');
+        const modalPuzzleImage = document.getElementById('modal-puzzle-image');
 
         // Card drag functionality
         let isDown = false;
@@ -286,7 +288,7 @@
                 // Correct guess
                 correctGuesses++;
                 usedCorrectUrls.push(url);
-                showModal('你超棒！', false);
+                showModal('正確答案！', false);
                 card.classList.add('invisible'); // Hide the card
                 card.style.opacity = '0';
                 
@@ -300,7 +302,7 @@
 
                 if (correctGuesses === 6) {
                     // All puzzles complete
-                    showModal('星系組合完成，女神浮現給你了一組密碼"0963"', true);
+                    showModal('星系組合完成，女神浮現給你一組密碼"0963"', true);
                 }
 
             } else {
@@ -315,11 +317,13 @@
             if (isGameComplete) {
                 modalButtonContinue.classList.add('hidden');
                 modalLinkButton.classList.remove('hidden');
+                modalPuzzleImage.classList.remove('hidden');
                 // 這裡可以修改連結網址
-                modalLinkButton.href = "final.html";
+                modalLinkButton.href = "https://example.com/password_page";
             } else {
                 modalButtonContinue.classList.remove('hidden');
                 modalLinkButton.classList.add('hidden');
+                modalPuzzleImage.classList.add('hidden');
             }
             modalOverlay.classList.remove('hidden');
         };
