@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>充滿線索的可疑樂譜</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e; /* 深色背景 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: #2e2c4b; /* 深色卡片背景 */
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); /* 強烈陰影 */
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid #4a4870; /* 邊框顏色 */
+            box-sizing: border-box;
+        }
+        .image-container {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 2px solid #4a4870;
+            border-radius: 1rem;
+            margin: 0 auto 1.5rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #scoreImage {
+            width: 100%;
+            height: 100%;
+            user-select: none;
+            -webkit-user-drag: none;
+            object-fit: contain;
+        }
+        #passwordInput {
+            background-color: #3b3a5a; /* 輸入框背景色 */
+            color: #ffffff; /* 輸入框文字顏色 */
+            border: 2px solid #5a577c;
+        }
+        #passwordInput::placeholder {
+            color: #a0a0c0; /* Placeholder 顏色 */
+        }
+        #submitBtn {
+            background-color: #7b4397; /* 按鈕背景色 */
+            color: #ffffff;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        #submitBtn:hover {
+            background-color: #9254ae; /* 按鈕 Hover 顏色 */
+            transform: scale(1.05);
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2e2c4b; /* 對話框背景色 */
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            text-align: center;
+            border: 2px solid #4a4870;
+            color: #ffffff;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* 半透明遮罩 */
+            z-index: 99;
+            display: none;
+        }
+        /* RWD 響應式調整 */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-3xl font-bold mb-4 text-white">充滿線索的可疑樂譜</h1>
+    
+    <!-- 圖片區塊 -->
+    <div class="image-container" id="imageContainer">
+        <img id="scoreImage" src="https://images2.imgbox.com/1b/42/vatC8HwE_o.png" alt="樂譜圖片" class="w-full h-auto">
+    </div>
+
+    <!-- 提示文字 -->
+    <div class="text-center text-gray-300 mb-6">
+        <p class="mb-2">輸入正確文字以取得密碼</p>
+        <p class="mb-2">（請尋找孤狗大師和音樂才子一起破關～）</p>
+        <p class="text-sm text-gray-400 mt-4">提示：大小寫皆可，不需輸入標點符號與空格</p>
+    </div>
+
+    <!-- 輸入欄位與按鈕 -->
+    <div class="flex flex-col sm:flex-row gap-4 items-center justify-center">
+        <input type="text" id="passwordInput" class="flex-grow w-full sm:w-auto px-4 py-2 rounded-lg focus:outline-none focus:border-[#a0a0c0]" placeholder="請輸入答案">
+        <button id="submitBtn" class="w-full sm:w-auto px-6 py-2 rounded-lg hover:transform hover:scale-105">
+            確認送出
+        </button>
+    </div>
+</div>
+
+<!-- 對話框覆蓋層 -->
+<div id="overlay" class="overlay hidden"></div>
+
+<!-- 對話框 -->
+<div id="messageBox" class="message-box hidden">
+    <p id="messageText" class="text-lg font-semibold text-white mb-4"></p>
+    <div class="flex justify-center gap-4">
+        <button id="actionBtn" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105"></button>
+    </div>
+</div>
+
+<script>
+    const passwordInput = document.getElementById('passwordInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const messageBox = document.getElementById('messageBox');
+    const messageText = document.getElementById('messageText');
+    const actionBtn = document.getElementById('actionBtn');
+    const overlay = document.getElementById('overlay');
+
+    // 顯示對話框
+    function showMessageBox(message, actionText, isSuccess) {
+        messageText.textContent = message;
+        actionBtn.textContent = actionText;
+        overlay.classList.remove('hidden');
+        messageBox.classList.remove('hidden');
+
+        // 根據結果設定按鈕行為
+        if (isSuccess) {
+            actionBtn.onclick = () => {
+                // 替換為實際的密碼網址
+                window.location.href = "final.html"; 
+            };
+        } else {
+            actionBtn.onclick = () => {
+                overlay.classList.add('hidden');
+                messageBox.classList.add('hidden');
+                passwordInput.value = '';
+            };
+        }
+    }
+
+    // 按鈕點擊事件
+    submitBtn.addEventListener('click', () => {
+        const correctPassword = "followyourheartdontgotoofar";
+        const inputPassword = passwordInput.value.toLowerCase().replace(/[\s\p{P}]/gu, '');
+        
+        if (inputPassword === correctPassword) {
+            showMessageBox("樂譜上浮現了幾個數字，看起來好像是\"0639\"", "前往輸入密碼", true);
+        } else {
+            showMessageBox("似乎不太正確，再試一次看看？", "重新輸入", false);
+        }
+    });
+</script>
+
+</body>
+</html>
