@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古老的星座密語</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #d1d5db;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            user-select: none;
+            scrollbar-width: none;
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        .card-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .card {
+            display: inline-block;
+            width: 150px;
+            height: 200px;
+            background-color: #4a5568;
+            border-radius: 0.5rem;
+            margin: 0 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            flex-shrink: 0;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Added for mobile responsiveness */
+        @media (max-width: 640px) {
+            .card-container {
+                display: flex;
+            }
+            .card {
+                width: 120px;
+                height: 160px;
+            }
+            .container {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.25rem;
+        }
+
+        .puzzle-piece {
+            width: 100%;
+            padding-top: 100%; /* 1:1 Aspect Ratio */
+            position: relative;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .puzzle-piece img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .puzzle-piece.visible img {
+            opacity: 1;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background-color: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <div class="container mx-auto p-8 rounded-xl shadow-lg">
+        <h1 class="text-4xl font-bold text-center mb-4">古老的星座密語</h1>
+        <p class="text-center mb-6 text-gray-400">請找到芳療大師，作為此關卡的遊戲夥伴。</p>
+
+        <div class="text-lg leading-relaxed mb-8 bg-gray-700 p-6 rounded-lg">
+            在一個塵封已久的古老圖書館裡，你找到了一本泛黃的筆記本。書頁上有一段用流暢筆跡寫下的文字：
+            <br><br>
+            「夜幕降臨，星辰低語。 想要找到處女的秘密，你必須先用那<strong>來自普羅旺斯的紫色星光</strong>，安撫躁動的心。 接著，用<strong>帶有柑橘香氣的金色陽光</strong>，驅散長夜的陰霾，讓思緒澄明。 當你感到焦慮時，那來自<strong>羅馬，帶有蘋果甜味的微風</strong>會輕撫你的額頭，給你寧靜。 然後，用<strong>南半球特有的潔淨之力</strong>，洗去所有不潔的意念。 不要忘了，那<strong>能讓身體溫暖、驅散寒冷的東方辛香</strong>，是勇氣的來源。 最後，用<strong>花中之后，那如同晨露般珍貴的香氣</strong>，開啟最終的封印。
+            <br><br>
+            收集這六個線索，你才能找到星圖的完整樣貌。」
+        </div>
+
+        <!-- Card Section -->
+        <div id="card-container" class="card-container flex py-4 mb-8 -mx-2">
+            <!-- Cards will be dynamically inserted here -->
+        </div>
+
+        <!-- Puzzle Section -->
+        <div class="puzzle-grid bg-cover bg-center rounded-lg shadow-inner" style="background-image: url('image/Virgo_BG.png');">
+            <div id="puzzle-1" class="puzzle-piece">
+                <img src="image/Virgo_01.png" alt="Puzzle Piece 1">
+            </div>
+            <div id="puzzle-2" class="puzzle-piece">
+                <img src="image/Virgo_02.png" alt="Puzzle Piece 2">
+            </div>
+            <div id="puzzle-3" class="puzzle-piece">
+                <img src="image/Virgo_03.png" alt="Puzzle Piece 3">
+            </div>
+            <div id="puzzle-4" class="puzzle-piece">
+                <img src="image/Virgo_04.png" alt="Puzzle Piece 4">
+            </div>
+            <div id="puzzle-5" class="puzzle-piece">
+                <img src="image/Virgo_05.png" alt="Puzzle Piece 5">
+            </div>
+            <div id="puzzle-6" class="puzzle-piece">
+                <img src="image/Virgo_06.png" alt="Puzzle Piece 6">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for feedback -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal text-white p-8 rounded-lg">
+            <p id="modal-message" class="text-2xl mb-6"></p>
+            <button id="modal-button-continue" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition-colors">繼續</button>
+            <a id="modal-link-button" href="#" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition-colors inline-block no-underline">前往輸入密碼</a>
+        </div>
+    </div>
+
+    <script>
+        // Data for cards and puzzles
+        const cardUrls = [
+            'image/card_01.png', // 1 - Correct
+            'image/card_02.png', // 2 - Correct
+            'image/card_03.png', // 3 - Correct
+            'image/card_04.png', // 4 - Correct
+            'image/card_05.png', // 5 - Correct
+            'image/card_06.png', // 6 - Correct
+            'image/card_07.png',
+            'image/card_08.png',
+            'image/card_09.png',
+            'image/card_10.png',
+            'image/card_11.png',
+            'image/card_12.png'
+        ];
+        const correctUrls = [
+            'image/card_01.png',
+            'image/card_02.png',
+            'image/card_03.png',
+            'image/card_04.png',
+            'image/card_05.png',
+            'image/card_06.png'
+        ];
+        const puzzlePieces = [1, 2, 3, 4, 5, 6];
+        let correctGuesses = 0;
+        let usedCorrectUrls = [];
+
+        // Elements
+        const cardContainer = document.getElementById('card-container');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalMessage = document.getElementById('modal-message');
+        const modalButtonContinue = document.getElementById('modal-button-continue');
+        const modalLinkButton = document.getElementById('modal-link-button');
+
+        // Card drag functionality
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        cardContainer.addEventListener('mousedown', (e) => {
+            isDown = true;
+            cardContainer.classList.add('active');
+            startX = e.pageX - cardContainer.offsetLeft;
+            scrollLeft = cardContainer.scrollLeft;
+        });
+        cardContainer.addEventListener('mouseleave', () => {
+            isDown = false;
+            cardContainer.classList.remove('active');
+        });
+        cardContainer.addEventListener('mouseup', () => {
+            isDown = false;
+            cardContainer.classList.remove('active');
+        });
+        cardContainer.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - cardContainer.offsetLeft;
+            const walk = (x - startX) * 2; // Scoll speed
+            cardContainer.scrollLeft = scrollLeft - walk;
+        });
+
+        // Function to shuffle an array
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+
+        // Function to initialize the cards
+        const initCards = () => {
+            shuffleArray(cardUrls);
+            cardContainer.innerHTML = '';
+            cardUrls.forEach(url => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.backgroundImage = `url('${url}')`;
+                card.addEventListener('click', () => handleCardClick(url, card));
+                cardContainer.appendChild(card);
+            });
+        };
+
+        // Function to handle card click
+        const handleCardClick = (url, card) => {
+            if (card.classList.contains('invisible')) {
+                return;
+            }
+
+            if (correctUrls.includes(url) && !usedCorrectUrls.includes(url)) {
+                // Correct guess
+                correctGuesses++;
+                usedCorrectUrls.push(url);
+                showModal('你超棒！', false);
+                card.classList.add('invisible'); // Hide the card
+                card.style.opacity = '0';
+                
+                // Show a random puzzle piece
+                const availablePuzzles = puzzlePieces.filter(p => !document.getElementById(`puzzle-${p}`).classList.contains('visible'));
+                if (availablePuzzles.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * availablePuzzles.length);
+                    const puzzleId = availablePuzzles[randomIndex];
+                    document.getElementById(`puzzle-${puzzleId}`).classList.add('visible');
+                }
+
+                if (correctGuesses === 6) {
+                    // All puzzles complete
+                    showModal('星系組合完成，女神浮現給你了一組密碼"0963"', true);
+                }
+
+            } else {
+                // Wrong guess
+                showModal('咦～再試試看喔！', false);
+            }
+        };
+
+        // Function to show modal
+        const showModal = (message, isGameComplete) => {
+            modalMessage.textContent = message;
+            if (isGameComplete) {
+                modalButtonContinue.classList.add('hidden');
+                modalLinkButton.classList.remove('hidden');
+                // 這裡可以修改連結網址
+                modalLinkButton.href = "final.html";
+            } else {
+                modalButtonContinue.classList.remove('hidden');
+                modalLinkButton.classList.add('hidden');
+            }
+            modalOverlay.classList.remove('hidden');
+        };
+
+        // Function to hide modal
+        modalButtonContinue.onclick = () => {
+            modalOverlay.classList.add('hidden');
+        };
+
+        // Initialize game on page load
+        window.onload = initCards;
+
+    </script>
+</body>
+</html>
