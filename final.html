@@ -61,6 +61,7 @@
         <!-- 解鎖後顯示的文字 -->
         <div id="unlocked-text-container" class="mb-4">
             <p id="unlocked-text" class="text-white text-xl sm:text-2xl font-bold text-center hidden"></p>
+            <p id="unlocked-text-sub" class="text-gray-400 text-sm hidden"></p>
         </div>
 
         <!-- Image Container -->
@@ -126,6 +127,7 @@
         const imageSections = document.getElementById('image-sections');
         const finalImage = document.getElementById('final-image');
         const unlockedText = document.getElementById('unlocked-text');
+        const unlockedTextSub = document.getElementById('unlocked-text-sub');
         const nextLevelButtonContainer = document.getElementById('next-level-button-container');
         const nextLevelLink = document.getElementById('next-level-link');
         
@@ -198,6 +200,7 @@
         // 解鎖圖片
         function unlockImages(password) {
             unlockedText.classList.add('hidden'); // 清除文字
+            unlockedTextSub.classList.add('hidden'); // 清除次要文字
             nextLevelButtonContainer.classList.add('hidden'); // 清除按鈕
             
             const level = passwords[password];
@@ -230,8 +233,10 @@
                 // 最終解鎖，替換為一張大圖
                 imageSections.classList.add('hidden');
                 finalImage.classList.remove('hidden');
-                unlockedText.innerHTML = '你打通了中央光柱，最終線索，脈輪皆已呈現<br><br>芳療大師擁有神秘寶藏，對她說出通關密語，他將把這份寶藏交付於你';
+                unlockedText.innerHTML = '你打通了中央光柱，最終解答皆已呈現';
+                unlockedTextSub.textContent = '芳療大師擁有神秘寶藏，對她說出通關密語，他將把這份寶藏交付於你';
                 unlockedText.classList.remove('hidden');
+                unlockedTextSub.classList.remove('hidden');
             }
         }
 
